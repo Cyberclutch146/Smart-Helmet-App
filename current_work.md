@@ -1,54 +1,53 @@
 # Smart Helmet App — Current Work Status
-**Last Updated:** 2026-05-30 21:06 IST
+**Last Updated:** 2026-05-31 11:50 IST
 
 ---
 
 ## ✅ Completed
 
-- **Codebase Cleanup**: Removed dead files (`app.dart`, `tester.dart`, empty `spotify.dart`), cleared boilerplate from `main.dart`
-- **Environment Variables**: Moved Google Maps & Spotify keys from hardcoded values to `.env.local`, loaded via `flutter_dotenv`
-- **Riverpod Setup**: Added `flutter_riverpod`, wrapped app in `ProviderScope`
-- **Firebase Auth (Dead Code)**: Complete auth service written at `lib/features/authentication/services/firebase_auth_service.dart` — fully isolated, not wired in yet
-- **Spotify SDK Upgrade**: Upgraded `spotify_sdk` from 2.3.1 → 3.0.2
-- **Android Native Setup**: Downloaded Spotify AAR files (`spotify-app-remote`, `spotify-auth`) into `android/` modules, updated `settings.gradle.kts`
-- **Manifest Config**: Added `redirectSchemeName`/`redirectHostName` placeholders, `<package>` query for `com.spotify.music`, Spotify deep-link intent filter
-- **Music Widget UI**: Built reactive `_MusicWidget` in `grid_screen.dart` with 3 states:
-  - Disconnected → "Connect Spotify" button
-  - Connected, no track → placeholder UI with controls
-  - Connected, playing → album art, scrolling title, artist, play/pause/skip controls
+- **Core Codebase & Architecture**:
+  - Cleaned up boilerplate and old dead files (`app.dart`, `tester.dart`, empty `spotify.dart`).
+  - Implemented **Riverpod state management** framework wrap (`ProviderScope`).
+  - Configured secure environment variables (`.env.local` with keys loaded via `flutter_dotenv`).
+
+- **Spotify SDK & Player Integration**:
+  - Upgraded to `spotify_sdk: 3.0.2` and integrated native Android `spotify-app-remote-release-0.8.0.aar`.
+  - Implemented `SpotifyService` singleton with full remote controls (play, pause, next, previous) and Spotify Web API integration (`fetchPlaylists`, `searchTracks` with access tokens).
+  - Built a beautiful glassmorphic **SpotifyPlayerSheet** UI supporting playlist browsing, track search, and active playback status.
+  - Connected the Spotify music widget in `grid_screen.dart` to the active SDK state.
+
+- **Native Voice Assistant & Hands-Free SMS**:
+  - Developed native Android `VoiceBackend` in Kotlin to handle low-level speech recognition and synthesis.
+  - Implemented `NativeVoiceChannel` event broadcast stream for high-performance communication.
+  - Implemented a background **Wake Word Service** for hands-free command activation.
+  - Created a **Hands-Free SMS Read & Reply** system using the `telephony` API — reads incoming messages aloud and allows the rider to dictate and send replies by voice.
+  - Integrated dynamic TTS adjustments based on rider speed (auto-adjusts volume and speech rate for clarity at higher speeds).
+
+- **Safety & SOS Emergency System**:
+  - Implemented `SosService` using device telephony to auto-send SMS emergency alerts with exact Google Maps coordinates to contacts.
+  - Created a high-fidelity **Crash Detection Overlay** with a 10-second emergency countdown, giving the rider a quick way to abort false alarms.
+  - Added a `MockHelmetService` simulating IoT telemetry (speed, helmet battery, crash sensors).
+
+- **Emergency Contacts Integration**:
+  - Integrated `flutter_contacts` API for seamless contact list access.
+  - Implemented `EmergencyContactsScreen` to pick and save up to 3 emergency contacts directly from the device's address book.
+
+- **Real-Time Telemetry & Systems**:
+  - Connected the voice assistant `speed` command to real GPS data via `Geolocator`.
+  - Connected `batteryStatus` command to real phone battery levels via `battery_plus`.
+  - Implemented voice volume adjustments ("louder", "quieter") via `flutter_volume_controller`.
+  - Integrated real weather conditions using `Geolocator` coordinates and the `Open-Meteo` API.
 
 ---
 
-## 🔧 In Progress: Spotify Authentication
+## 🔧 Current Focus & Next Steps
 
-### Current Blocker
-The Spotify SDK auth flow is failing. We've isolated it to a **Spotify Developer Dashboard** configuration issue:
+1. **Hardware Integration (ESP32-S3)**:
+   - Establish real Bluetooth Low Energy (BLE) connection using a flutter BLE library.
+   - Stream live helmet battery status, indicator statuses, and physical button triggers to replace the `MockHelmetService`.
+2. **Settings Expansion**:
+   - Complete non-functional UI tiles in the Settings screen (Voice sensitivity, Bluetooth pairing, Navigation preferences).
+3. **App Distribution & Polish**:
+   - Validate Android production build configurations.
+   - Refactor duplicated widgets and inline API queries into clear domain repositories.
 
-- **Error**: `UserNotAuthorizedException` / `AUTHENTICATION_SERVICE_UNAVAILABLE`
-- **Root Cause**: App is in **Development Mode** on the Spotify Developer Dashboard. Only explicitly-added test users can authenticate.
-- **Fix Required**: Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) → Smart Helmet app → **User Management** tab → add your Spotify account email as a test user → Save.
-
-### Dashboard Config (Verified ✓)
-| Setting | Value |
-|---|---|
-| Client ID | `bf92789970a941bfa315a0c91925328a` |
-| Redirect URI | `helmetapp://callback` |
-| Package Name | `com.example.helmet_app` |
-| SHA-1 Fingerprint | `DF:53:A6:7D:2B:F2:2E:C8:E6:64:DD:FA:51:93:31:23:F2:BB:BE:0A` |
-
-### After Auth Works — Next Steps
-1. Re-add scopes to `connectToSpotifyRemote`: `app-remote-control,user-modify-playback-state,playlist-read-private,user-library-read`
-2. Remove verbose debug logging from `spotify_service.dart`
-3. Test play/pause/skip controls with live Spotify playback
-4. Test voice commands → Spotify integration via `intent_router.dart`
-
----
-
-## 📋 Remaining Features (from implementation plan)
-
-- [ ] Wire in Firebase Authentication (currently dead code)
-- [ ] Bluetooth/IoT helmet connectivity
-- [ ] Real battery status (phone + helmet)
-- [ ] Crash detection & emergency SOS
-- [ ] Speed/weather dashboard widgets
-- [ ] Polish voice assistant → Spotify/navigation integration

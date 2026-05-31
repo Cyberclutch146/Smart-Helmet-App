@@ -232,8 +232,49 @@ To be added.
 ## 👨‍💻 Authors
 
 **Anuvab Das** — Hardware & App Architecture  
-**Swagata** — Voice Assistant & Navigation
+**Swagata** — Voice Assistant & Navigation 
+**Dhritiman** — Documentation
 
 ---
 
-⭐ Star the repo if you like it!
+⭐ Star the repo if you like it!back
+```
+
+> ⚠️ **IMPORTANT**: `.env.local` is strictly required. The app force-unwraps these keys on launch and will crash immediately if they are missing.
+
+### Android Manifest Settings
+To ensure proper Spotify integration, the project is configured with deep-linking intents. Verify that the following schemas are declared inside `android/app/src/main/AndroidManifest.xml`:
+
+- `<package android:name="com.spotify.music" />` (to allow package queries)
+- Intent filters for `helmetapp://callback` to listen for Spotify access tokens.
+
+---
+
+## 🛣️ Roadmap
+
+- [x] Dashboard view with telemetry overlays
+- [x] Full-screen Google Maps Navigation with recalculations
+- [x] Real-time speed and battery telemetry integration
+- [x] Complete emergency contacts selection using address books
+- [x] Crash detection warning system & 10s countdown overlays
+- [x] Real-time emergency GPS dispatching over automated SMS
+- [x] Real meteorological forecast integration via Open-Meteo API
+- [x] Hands-free incoming SMS voice reading
+- [x] Voice-controlled message reply dictating
+- [x] Full Spotify SDK App Remote integration (play, pause, next, skip)
+- [x] Spotify Web API playlist browser & database track search
+- [x] Background Wake Word Service integration for hands-free assistant launches
+- [/] Physical Bluetooth BLE smart helmet integration (Stream physical telemetry from ESP32)
+- [ ] Firebase authentication integration
+- [ ] OTA firmware updates for helmet
+
+---
+
+## 👨‍💻 Authors
+
+- **Anuvab Das** — Hardware Architecture & App Core
+- **Swagata** — Voice Assistant, Navigation & Infotainment
+
+---
+
+⭐ Star the repository if you love our project!
